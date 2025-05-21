@@ -49,6 +49,10 @@ public class Tarefa implements Serializable {
     private Date dataConclusao;
     
     @ManyToOne
+    @JoinColumn(name = "responsavel_id")
+    private Usuario responsavel;
+    
+    @ManyToOne
     @JoinColumn(name = "usuario_id", nullable = false)
     private Usuario usuario;
     
@@ -90,6 +94,14 @@ public class Tarefa implements Serializable {
 
     public void setStatus(StatusTarefa status) {
         this.status = status;
+    }
+    
+    public Usuario getResponsavel() {
+        return responsavel;
+    }
+    
+    public void setResponsavel(Usuario responsavel) {
+        this.responsavel = responsavel;
     }
 
     public PrioridadeTarefa getPrioridade() {

@@ -14,7 +14,9 @@ import javax.persistence.EntityTransaction;
 import com.gerenciadortarefas.model.PrioridadeTarefa;
 import com.gerenciadortarefas.model.StatusTarefa;
 import com.gerenciadortarefas.model.Tarefa;
+import com.gerenciadortarefas.model.Usuario;
 import com.gerenciadortarefas.service.TarefaService;
+import com.gerenciadortarefas.service.UsuarioService;
 import com.gerenciadortarefas.util.FacesContextWrapper;
 import com.gerenciadortarefas.util.JPAUtil;
 
@@ -31,15 +33,21 @@ public class TarefaBean implements Serializable {
     private Long tarefaSelecionadaId;
     private boolean mostrarFormulario = false;
     
+    // Novos campos para o responsável
+    private List<Usuario> usuarios;
+    private Usuario responsavelSelecionado;
+    
     private FacesContextWrapper facesContextWrapper;
 
     @ManagedProperty("#{sessionBean}")
     private SessionBean sessionBean;
     
     private TarefaService tarefaService;
+    private UsuarioService usuarioService;
     
     public TarefaBean() {
         this.tarefaService = new TarefaService();
+        this.usuarioService = new UsuarioService();
         this.tarefa = new Tarefa();
         this.facesContextWrapper = new FacesContextWrapper();
     }
@@ -48,6 +56,18 @@ public class TarefaBean implements Serializable {
     public void init() {
         if (sessionBean != null && sessionBean.isLogado()) {
             carregarTarefas();
+            carregarUsuarios();
+        }
+    }
+    
+    // Novo método para carregar usuários para o seletor de responsável
+    public void carregarUsuarios() {
+        try {
+            this.usuarios = usuarioService.listarTodos();
+            System.out.println("Usuários carregados: " + (usuarios != null ? usuarios.size() : "null"));
+        } catch (Exception e) {
+            System.out.println("ERRO ao carregar usuários: " + e.getMessage());
+            e.printStackTrace();
         }
     }
     
@@ -104,6 +124,7 @@ public class TarefaBean implements Serializable {
         // Se estiver fechando o formulário, limpe os dados da tarefa
         if (!mostrarFormulario) {
             this.tarefa = new Tarefa();
+            this.responsavelSelecionado = null;
         }
         
         return null;
@@ -125,6 +146,12 @@ public class TarefaBean implements Serializable {
             }
             
             tarefa.setUsuario(sessionBean.getUsuarioLogado());
+            
+            // Definir o responsável antes de salvar
+            if (responsavelSelecionado != null) {
+                tarefa.setResponsavel(responsavelSelecionado);
+                System.out.println("Definindo responsável: " + responsavelSelecionado.getNome() + " (ID: " + responsavelSelecionado.getId() + ")");
+            }
             
             // Usar EntityManager diretamente para salvar
             EntityManager em = JPAUtil.getEntityManager();
@@ -159,6 +186,7 @@ public class TarefaBean implements Serializable {
             
             // Limpar o formulário e recarregar tarefas
             this.tarefa = new Tarefa();
+            this.responsavelSelecionado = null;
             this.mostrarFormulario = false; // Oculta o formulário após salvar
             carregarTarefas();
             
@@ -183,6 +211,7 @@ public class TarefaBean implements Serializable {
     // Métodos para edição - separados para funcionar com f:setPropertyActionListener
     public void setTarefaParaEditar(Tarefa tarefa) {
         this.tarefa = tarefa;
+        this.responsavelSelecionado = tarefa.getResponsavel(); // Carrega o responsável atual
         this.mostrarFormulario = true; // Mostra o formulário ao editar
     }
     
@@ -345,6 +374,26 @@ public class TarefaBean implements Serializable {
 
     public void setFacesContextWrapper(FacesContextWrapper facesContextWrapper) {
         this.facesContextWrapper = facesContextWrapper;
+    }
+    
+    // Novos getters e setters para o responsável
+    public List<Usuario> getUsuarios() {
+        return usuarios;
+    }
+    
+    public void setUsuarios(List<Usuario> usuarios) {
+        this.usuarios = usuarios;
+    }
+    
+    public Usuario getResponsavelSelecionado() {
+        return responsavelSelecionado;
+    }
+    
+    public void setResponsavelSelecionado(Usuario responsavelSelecionado) {
+        // O responsável pode ser nulo (quando a opção "Selecione um responsável" é escolhida)
+        this.responsavelSelecionado = responsavelSelecionado;
+        System.out.println("Responsável selecionado: " + (responsavelSelecionado != null ? 
+            responsavelSelecionado.getNome() + " (ID: " + responsavelSelecionado.getId() + ")" : "nenhum"));
     }
     
     // Métodos para obter os valores dos enums para os selects

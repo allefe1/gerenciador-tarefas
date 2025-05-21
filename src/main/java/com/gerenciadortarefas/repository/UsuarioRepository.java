@@ -3,6 +3,7 @@ package com.gerenciadortarefas.repository;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
+import java.util.List;
 
 import com.gerenciadortarefas.model.Usuario;
 import com.gerenciadortarefas.util.JPAUtil;
@@ -34,4 +35,18 @@ public class UsuarioRepository extends AbstractRepository<Usuario, Long> {
             em.close();
         }
     }
+    
+    /**
+     * Retorna uma lista de todos os usuários cadastrados no sistema
+     * @return Lista de usuários
+     */
+    public List<Usuario> findAll() {
+        EntityManager em = JPAUtil.getEntityManager();
+        try {
+            return em.createQuery("FROM Usuario", Usuario.class).getResultList();
+        } finally {
+            em.close();
+        }
+    }
+    
 }

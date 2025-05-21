@@ -1,9 +1,8 @@
 package com.gerenciadortarefas.service;
-
+import java.util.List;
 import com.gerenciadortarefas.model.Usuario;
 import com.gerenciadortarefas.repository.UsuarioRepository;
 import com.gerenciadortarefas.util.PasswordUtil;
-
 public class UsuarioService {
     
     private UsuarioRepository usuarioRepository;
@@ -59,5 +58,10 @@ public class UsuarioService {
         }
         
         return usuarioRepository.save(usuario);
+    }
+    
+    // Método novo para listar todos os usuários
+    public List<Usuario> listarTodos() {
+        return usuarioRepository.findAll();
     }
 }

@@ -58,6 +58,19 @@
 				</h:selectOneMenu>
 			</div>
 
+			<!-- Campo de seleção de responsável adicionado aqui -->
+			<div class="form-group">
+				<h:outputLabel for="responsavel" value="Responsável:" />
+				<h:selectOneMenu id="responsavel"
+					value="#{tarefaBean.responsavelSelecionado}"
+					converter="usuarioConverter" styleClass="form-control">
+					<f:selectItem itemLabel="Selecione um responsável"
+						itemValue="#{null}" />
+					<f:selectItems value="#{tarefaBean.usuarios}" var="usuario"
+						itemLabel="#{usuario.nome}" itemValue="#{usuario}" />
+				</h:selectOneMenu>
+			</div>
+
 			<div class="form-group">
 				<h:commandButton value="Salvar" action="#{tarefaBean.salvar}"
 					styleClass="btn">
