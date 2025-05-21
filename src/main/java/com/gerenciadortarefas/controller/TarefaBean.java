@@ -29,8 +29,8 @@ public class TarefaBean implements Serializable {
     private StatusTarefa filtroStatus;
     private PrioridadeTarefa filtroPrioridade;
     private Long tarefaSelecionadaId;
+    private boolean mostrarFormulario = false;
 
-    
     @ManagedProperty("#{sessionBean}")
     private SessionBean sessionBean;
     
@@ -71,18 +71,20 @@ public class TarefaBean implements Serializable {
     }
     
     public String filtrarPorStatus() {
-        if (filtroStatus != null) {
-            filtroPrioridade = null; // Limpa o outro filtro
-            carregarTarefas();
+        // Se o status for null, limpa o filtro de prioridade também
+        if (filtroStatus == null) {
+            filtroPrioridade = null;
         }
+        carregarTarefas();
         return null;
     }
     
     public String filtrarPorPrioridade() {
-        if (filtroPrioridade != null) {
-            filtroStatus = null; // Limpa o outro filtro
-            carregarTarefas();
+        // Se a prioridade for null, limpa o filtro de status também
+        if (filtroPrioridade == null) {
+            filtroStatus = null;
         }
+        carregarTarefas();
         return null;
     }
     
@@ -93,6 +95,16 @@ public class TarefaBean implements Serializable {
         return null;
     }
     
+    public String toggleFormulario() {
+        this.mostrarFormulario = !this.mostrarFormulario;
+        
+        // Se estiver fechando o formulário, limpe os dados da tarefa
+        if (!mostrarFormulario) {
+            this.tarefa = new Tarefa();
+        }
+        
+        return null;
+    }
     
     public String salvar() {
         System.out.println("Método salvar() iniciado");
@@ -144,6 +156,7 @@ public class TarefaBean implements Serializable {
             
             // Limpar o formulário e recarregar tarefas
             this.tarefa = new Tarefa();
+            this.mostrarFormulario = false; // Oculta o formulário após salvar
             carregarTarefas();
             
             FacesContext.getCurrentInstance().addMessage(null, 
@@ -167,6 +180,7 @@ public class TarefaBean implements Serializable {
     // Métodos para edição - separados para funcionar com f:setPropertyActionListener
     public void setTarefaParaEditar(Tarefa tarefa) {
         this.tarefa = tarefa;
+        this.mostrarFormulario = true; // Mostra o formulário ao editar
     }
     
     // Métodos para exclusão
@@ -270,10 +284,13 @@ public class TarefaBean implements Serializable {
 
     public void setFiltroStatus(StatusTarefa filtroStatus) {
         this.filtroStatus = filtroStatus;
-        if (filtroStatus != null) {
-            filtroPrioridade = null; // Limpa o outro filtro
-            carregarTarefas();
+        
+        // Se o status for null, limpa o filtro de prioridade também
+        if (filtroStatus == null) {
+            filtroPrioridade = null;
         }
+        
+        carregarTarefas();
     }
 
     public PrioridadeTarefa getFiltroPrioridade() {
@@ -282,10 +299,13 @@ public class TarefaBean implements Serializable {
 
     public void setFiltroPrioridade(PrioridadeTarefa filtroPrioridade) {
         this.filtroPrioridade = filtroPrioridade;
-        if (filtroPrioridade != null) {
-            filtroStatus = null; // Limpa o outro filtro
-            carregarTarefas();
+        
+        // Se a prioridade for null, limpa o filtro de status também
+        if (filtroPrioridade == null) {
+            filtroStatus = null;
         }
+        
+        carregarTarefas();
     }
 
     public SessionBean getSessionBean() {
@@ -304,6 +324,17 @@ public class TarefaBean implements Serializable {
         this.tarefaSelecionadaId = tarefaSelecionadaId;
     }
     
+    public boolean isMostrarFormulario() {
+        return mostrarFormulario;
+    }
+    
+    public boolean getMostrarFormulario() {
+        return mostrarFormulario;
+    }
+
+    public void setMostrarFormulario(boolean mostrarFormulario) {
+        this.mostrarFormulario = mostrarFormulario;
+    }
     
     // Métodos para obter os valores dos enums para os selects
     public StatusTarefa[] getStatusValues() {

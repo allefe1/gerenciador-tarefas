@@ -8,8 +8,20 @@
 	<ui:define name="content">
 		<h2>Gerenciar Tarefas</h2>
 
-		<!-- Formulário sempre visível -->
-		<h:form id="formNovaTarefa">
+		<!-- Botão para mostrar/ocultar o formulário -->
+		<h:form id="toggleForm">
+			<h:commandButton
+				value="#{tarefaBean.mostrarFormulario ? 'Cancelar' : 'Nova Tarefa'}"
+				action="#{tarefaBean.toggleFormulario}"
+				styleClass="#{tarefaBean.mostrarFormulario ? 'btn btn-warning' : 'btn'}"
+				style="margin-bottom: 15px;">
+				<f:ajax execute="@this" render="toggleForm formNovaTarefa" />
+			</h:commandButton>
+		</h:form>
+
+		<!-- Formulário sempre presente no DOM, mas visibilidade controlada por CSS -->
+		<h:form id="formNovaTarefa"
+			style="#{tarefaBean.mostrarFormulario ? 'display:block;' : 'display:none;'}">
 			<h3>#{empty tarefaBean.tarefa.id ? 'Nova Tarefa' : 'Editar
 				Tarefa'}</h3>
 
@@ -49,7 +61,7 @@
 			<div class="form-group">
 				<h:commandButton value="Salvar" action="#{tarefaBean.salvar}"
 					styleClass="btn">
-					<f:ajax execute="@form" render="@form tabelaTarefas" />
+					<f:ajax execute="@form" render="@form tabelaTarefas toggleForm" />
 				</h:commandButton>
 			</div>
 		</h:form>
@@ -64,7 +76,8 @@
 					<h:outputLabel for="filtroStatus" value="Filtrar por Status: " />
 					<h:selectOneMenu id="filtroStatus"
 						value="#{tarefaBean.filtroStatus}" styleClass="form-control">
-						<f:selectItem itemLabel="Todos" itemValue="#{null}" />
+						<f:selectItem itemLabel="Todos" itemValue="#{null}"
+							noSelectionOption="true" />
 						<f:selectItems value="#{tarefaBean.statusValues}" var="status"
 							itemLabel="#{status}" itemValue="#{status}" />
 						<f:ajax execute="@this" render="tabelaTarefas" />
@@ -76,7 +89,8 @@
 						value="Filtrar por Prioridade: " />
 					<h:selectOneMenu id="filtroPrioridade"
 						value="#{tarefaBean.filtroPrioridade}" styleClass="form-control">
-						<f:selectItem itemLabel="Todos" itemValue="#{null}" />
+						<f:selectItem itemLabel="Todos" itemValue="#{null}"
+							noSelectionOption="true" />
 						<f:selectItems value="#{tarefaBean.prioridadeValues}"
 							var="prioridade" itemLabel="#{prioridade}"
 							itemValue="#{prioridade}" />
@@ -100,23 +114,23 @@
 				styleClass="table" rendered="#{not empty tarefaBean.tarefas}">
 				<h:column>
 					<f:facet name="header">Título</f:facet>
-            #{tarefa.titulo}
-        </h:column>
+        #{tarefa.titulo}
+    </h:column>
 
 				<h:column>
 					<f:facet name="header">Descrição</f:facet>
-            #{tarefa.descricao}
-        </h:column>
+        #{tarefa.descricao}
+    </h:column>
 
 				<h:column>
 					<f:facet name="header">Status</f:facet>
-            #{tarefa.status}
-        </h:column>
+        #{tarefa.status}
+    </h:column>
 
 				<h:column>
 					<f:facet name="header">Prioridade</f:facet>
-            #{tarefa.prioridade}
-        </h:column>
+        #{tarefa.prioridade}
+    </h:column>
 
 				<h:column>
 					<f:facet name="header">Data Criação</f:facet>
@@ -129,9 +143,9 @@
 					<f:facet name="header">Ações</f:facet>
 					<h:commandButton value="Editar" styleClass="btn btn-warning"
 						style="margin-right: 5px;">
-						<f:setPropertyActionListener target="#{tarefaBean.tarefa}"
-							value="#{tarefa}" />
-						<f:ajax execute="@this" render="formNovaTarefa" />
+						<f:setPropertyActionListener
+							target="#{tarefaBean.tarefaParaEditar}" value="#{tarefa}" />
+						<f:ajax execute="@this" render="formNovaTarefa toggleForm" />
 					</h:commandButton>
 
 					<h:commandButton value="Excluir" action="#{tarefaBean.excluir}"
