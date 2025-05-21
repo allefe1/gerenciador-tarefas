@@ -8,7 +8,6 @@ import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
-import javax.faces.context.FacesContext;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 
@@ -16,6 +15,7 @@ import com.gerenciadortarefas.model.PrioridadeTarefa;
 import com.gerenciadortarefas.model.StatusTarefa;
 import com.gerenciadortarefas.model.Tarefa;
 import com.gerenciadortarefas.service.TarefaService;
+import com.gerenciadortarefas.util.FacesContextWrapper;
 import com.gerenciadortarefas.util.JPAUtil;
 
 @ManagedBean
@@ -30,6 +30,8 @@ public class TarefaBean implements Serializable {
     private PrioridadeTarefa filtroPrioridade;
     private Long tarefaSelecionadaId;
     private boolean mostrarFormulario = false;
+    
+    private FacesContextWrapper facesContextWrapper;
 
     @ManagedProperty("#{sessionBean}")
     private SessionBean sessionBean;
@@ -39,6 +41,7 @@ public class TarefaBean implements Serializable {
     public TarefaBean() {
         this.tarefaService = new TarefaService();
         this.tarefa = new Tarefa();
+        this.facesContextWrapper = new FacesContextWrapper();
     }
     
     @PostConstruct
@@ -159,12 +162,12 @@ public class TarefaBean implements Serializable {
             this.mostrarFormulario = false; // Oculta o formulário após salvar
             carregarTarefas();
             
-            FacesContext.getCurrentInstance().addMessage(null, 
+            facesContextWrapper.getCurrentInstance().addMessage(null, 
                     new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", "Tarefa salva com sucesso!"));
         } catch (Exception e) {
             System.out.println("ERRO geral ao salvar tarefa: " + e.getMessage());
             e.printStackTrace();
-            FacesContext.getCurrentInstance().addMessage(null, 
+            facesContextWrapper.getCurrentInstance().addMessage(null, 
                     new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erro", e.getMessage()));
         }
         return null;
@@ -172,7 +175,7 @@ public class TarefaBean implements Serializable {
     
     public String testarSalvar() {
         System.out.println("MÉTODO DE TESTE CHAMADO");
-        FacesContext.getCurrentInstance().addMessage(null, 
+        facesContextWrapper.getCurrentInstance().addMessage(null, 
                 new FacesMessage(FacesMessage.SEVERITY_INFO, "Teste", "Método de teste chamado!"));
         return null;
     }
@@ -233,10 +236,10 @@ public class TarefaBean implements Serializable {
             tarefaService.concluirTarefa(tarefaSelecionadaId);
             carregarTarefas();
             
-            FacesContext.getCurrentInstance().addMessage(null, 
+            facesContextWrapper.getCurrentInstance().addMessage(null, 
                     new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", "Tarefa concluída com sucesso!"));
         } catch (Exception e) {
-            FacesContext.getCurrentInstance().addMessage(null, 
+            facesContextWrapper.getCurrentInstance().addMessage(null, 
                     new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erro", e.getMessage()));
         }
         return null;
@@ -252,10 +255,10 @@ public class TarefaBean implements Serializable {
             tarefaService.reabrirTarefa(tarefaSelecionadaId);
             carregarTarefas();
             
-            FacesContext.getCurrentInstance().addMessage(null, 
+            facesContextWrapper.getCurrentInstance().addMessage(null, 
                     new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", "Tarefa reaberta com sucesso!"));
         } catch (Exception e) {
-            FacesContext.getCurrentInstance().addMessage(null, 
+            facesContextWrapper.getCurrentInstance().addMessage(null, 
                     new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erro", e.getMessage()));
         }
         return null;
@@ -334,6 +337,14 @@ public class TarefaBean implements Serializable {
 
     public void setMostrarFormulario(boolean mostrarFormulario) {
         this.mostrarFormulario = mostrarFormulario;
+    }
+    
+    public FacesContextWrapper getFacesContextWrapper() {
+        return facesContextWrapper;
+    }
+
+    public void setFacesContextWrapper(FacesContextWrapper facesContextWrapper) {
+        this.facesContextWrapper = facesContextWrapper;
     }
     
     // Métodos para obter os valores dos enums para os selects
