@@ -1,7 +1,11 @@
 package com.gerenciadortarefas.controller;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
@@ -79,15 +83,34 @@ public class TarefaBean implements Serializable {
             return null;
         }
         
-        System.out.println("Carregando tarefas para usuário ID: " + sessionBean.getUsuarioLogado().getId());
+        Usuario usuarioLogado = sessionBean.getUsuarioLogado();
+        System.out.println("Carregando tarefas para usuário ID: " + usuarioLogado.getId());
         
+        // Busca combinada de tarefas
+        List<Tarefa> tarefasCombinadas = new ArrayList<>();
+        
+        // Tarefas onde o usuário é dono
+        tarefasCombinadas.addAll(tarefaService.listarTarefasDoUsuario(usuarioLogado));
+        
+        // Tarefas onde o usuário é responsável
+        tarefasCombinadas.addAll(tarefaService.listarTarefasDoResponsavel(usuarioLogado));
+        
+        // Remove duplicatas
+        Set<Tarefa> tarefasUnicas = new LinkedHashSet<>(tarefasCombinadas);
+        List<Tarefa> tarefasFiltradas = new ArrayList<>(tarefasUnicas);
+
+        // Aplica filtros
         if (filtroStatus != null) {
-            tarefas = tarefaService.filtrarPorStatus(sessionBean.getUsuarioLogado(), filtroStatus);
+            tarefasFiltradas = tarefasFiltradas.stream()
+                .filter(t -> t.getStatus() == filtroStatus)
+                .collect(Collectors.toList());
         } else if (filtroPrioridade != null) {
-            tarefas = tarefaService.filtrarPorPrioridade(sessionBean.getUsuarioLogado(), filtroPrioridade);
-        } else {
-            tarefas = tarefaService.listarTarefasDoUsuario(sessionBean.getUsuarioLogado());
+            tarefasFiltradas = tarefasFiltradas.stream()
+                .filter(t -> t.getPrioridade() == filtroPrioridade)
+                .collect(Collectors.toList());
         }
+
+        this.tarefas = tarefasFiltradas;
         
         System.out.println("Tarefas carregadas: " + (tarefas != null ? tarefas.size() : "null"));
         return null;

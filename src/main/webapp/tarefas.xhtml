@@ -111,10 +111,10 @@
 					</h:selectOneMenu>
 				</div>
 
-				<div>
+				<div style="text-align: center; margin-top: 20px;">
 					<h:commandButton value="Limpar Filtros"
 						action="#{tarefaBean.limparFiltros}" styleClass="btn"
-						style="margin-top: 20px;">
+						style="display: inline-block;">
 						<f:ajax execute="@this"
 							render="tabelaTarefas filtroStatus filtroPrioridade" />
 					</h:commandButton>

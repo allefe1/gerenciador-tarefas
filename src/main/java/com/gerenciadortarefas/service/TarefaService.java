@@ -40,6 +40,14 @@ public class TarefaService {
         return tarefaRepository.findById(id);
     }
     
+    public List<Tarefa> listarTarefasDoResponsavel(Usuario responsavel) {
+        return tarefaRepository.findByResponsavel(responsavel);
+    }
+
+    public List<Tarefa> listarTarefasDoUsuarioEResponsavel(Usuario usuario, Usuario responsavel) {
+        return tarefaRepository.findByUsuarioAndResponsavel(usuario, responsavel);
+    }
+    
     public List<Tarefa> listarTarefasDoUsuario(Usuario usuario) {
         return tarefaRepository.findByUsuario(usuario);
     }
