@@ -1,10 +1,15 @@
 package com.gerenciadortarefas.service;
+
+import java.io.Serializable; // Importe a interface Serializable
 import java.util.List;
 import com.gerenciadortarefas.model.Usuario;
 import com.gerenciadortarefas.repository.UsuarioRepository;
 import com.gerenciadortarefas.util.PasswordUtil;
-public class UsuarioService {
+
+public class UsuarioService implements Serializable { // Adicione "implements Serializable"
     
+    private static final long serialVersionUID = 1L; // Adicione um serialVersionUID
+
     private UsuarioRepository usuarioRepository;
     
     public UsuarioService() {
@@ -14,9 +19,15 @@ public class UsuarioService {
     public Usuario cadastrar(Usuario usuario) {
         // Verifica se já existe usuário com o mesmo email
         if (usuarioRepository.existsWithEmail(usuario.getEmail())) {
-            throw new RuntimeException("Email já cadastrado");
+            throw new RuntimeException("Email já cadastrado. Por favor, utilize outro email.");
         }
         
+        // Validação de senha (exemplo: não pode ser nula ou vazia antes de criptografar)
+        if (usuario.getSenha() == null || usuario.getSenha().trim().isEmpty()) {
+            throw new RuntimeException("A senha não pode ser vazia.");
+        }
+        // Você também pode adicionar validações de força de senha aqui, se desejar.
+
         // Criptografa a senha antes de salvar
         String senhaCriptografada = PasswordUtil.hashPassword(usuario.getSenha());
         usuario.setSenha(senhaCriptografada);
@@ -28,7 +39,11 @@ public class UsuarioService {
         Usuario usuario = usuarioRepository.findByEmail(email);
         
         if (usuario == null) {
-            throw new RuntimeException("Usuário não encontrado");
+            // Não especifique se é o usuário ou a senha que está errada por segurança
+            // A mensagem "Usuário não encontrado" pode ser um problema de segurança (enumeração de usuários)
+            // É melhor uma mensagem genérica como "Email ou senha inválidos." que o LoginBean já trata.
+            // Mas, para manter a lógica atual do seu LoginBean que verifica a mensagem:
+            throw new RuntimeException("Usuário não encontrado"); 
         }
         
         if (!PasswordUtil.checkPassword(senha, usuario.getSenha())) {
@@ -47,20 +62,33 @@ public class UsuarioService {
     }
     
     public Usuario atualizar(Usuario usuario) {
-        // Se estiver atualizando a senha, criptografa novamente
-        if (usuario.getSenha() != null && !usuario.getSenha().isEmpty()) {
+        // Primeiro, verifica se o usuário a ser atualizado realmente existe
+        Usuario usuarioExistente = usuarioRepository.findById(usuario.getId());
+        if (usuarioExistente == null) {
+            throw new RuntimeException("Usuário com ID " + usuario.getId() + " não encontrado para atualização.");
+        }
+
+        // Se uma nova senha foi fornecida (não nula e não vazia), criptografa e atualiza
+        if (usuario.getSenha() != null && !usuario.getSenha().trim().isEmpty()) {
+            // Validação de força da nova senha pode ser adicionada aqui
             String senhaCriptografada = PasswordUtil.hashPassword(usuario.getSenha());
             usuario.setSenha(senhaCriptografada);
         } else {
-            // Se não estiver atualizando a senha, recupera a senha atual
-            Usuario usuarioAtual = usuarioRepository.findById(usuario.getId());
-            usuario.setSenha(usuarioAtual.getSenha());
+            // Se nenhuma nova senha foi fornecida, mantém a senha antiga do banco
+            usuario.setSenha(usuarioExistente.getSenha());
         }
         
-        return usuarioRepository.save(usuario);
+        // Atualiza outros campos (nome, email, etc., se necessário, com validações)
+        // Exemplo: se o email for alterado, verificar se o novo email já existe para outro usuário
+        if (usuario.getEmail() != null && !usuario.getEmail().equals(usuarioExistente.getEmail())) {
+            if (usuarioRepository.existsWithEmail(usuario.getEmail())) {
+                throw new RuntimeException("O novo email '" + usuario.getEmail() + "' já está cadastrado para outro usuário.");
+            }
+        }
+        
+        return usuarioRepository.save(usuario); // O método save do repositório deve lidar com merge/update
     }
     
-    // Método novo para listar todos os usuários
     public List<Usuario> listarTodos() {
         return usuarioRepository.findAll();
     }

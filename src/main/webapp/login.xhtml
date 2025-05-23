@@ -9,11 +9,16 @@
 </h:head>
 <h:body>
 	<div class="split-container">
-		<!-- Lado Esquerdo - Formulário de Login -->
 		<div class="left-side">
 			<div class="app-title">Gerenciador de Tarefas</div>
 
-			<!-- Formulário de Login (visível por padrão) -->
+			<h:messages globalOnly="true" showDetail="true" showSummary="true"
+				layout="list" styleClass="geral-mensagens"
+				errorClass="mensagem-erro geral-mensagem-erro"
+				infoClass="mensagem-info geral-mensagem-info"
+				warnClass="mensagem-aviso geral-mensagem-aviso"
+				fatalClass="mensagem-fatal geral-mensagem-fatal" />
+
 			<div id="login-form">
 				<h2>Login</h2>
 				<p>Entre com sua conta e melhore sua produtividade</p>
@@ -48,7 +53,6 @@
 				</div>
 			</div>
 
-			<!-- Formulário de Registro (inicialmente oculto) -->
 			<div id="register-form" style="display: none;">
 				<h2>Cadastre-se</h2>
 				<p>Crie sua conta e comece a gerenciar suas tarefas</p>
@@ -101,7 +105,6 @@
 			</div>
 		</div>
 
-		<!-- Lado Direito - Imagem e Texto Promocional -->
 		<div class="right-side">
 			<div class="right-side-content">
 				<h1>Sua produtividade começa aqui.</h1>
@@ -112,23 +115,41 @@
 	</div>
 
 	<script type="text/javascript">
-		document
-				.getElementById('show-register')
-				.addEventListener(
-						'click',
-						function() {
-							document.getElementById('login-form').style.display = 'none';
-							document.getElementById('register-form').style.display = 'block';
-						});
+	//<![CDATA[
+		function showLoginForm() {
+			document.getElementById('register-form').style.display = 'none';
+			document.getElementById('login-form').style.display = 'block';
+		}
 
-		document
-				.getElementById('show-login')
-				.addEventListener(
-						'click',
-						function() {
-							document.getElementById('register-form').style.display = 'none';
-							document.getElementById('login-form').style.display = 'block';
-						});
+		function showRegisterForm() {
+			document.getElementById('login-form').style.display = 'none';
+			document.getElementById('register-form').style.display = 'block';
+		}
+
+		document.addEventListener('DOMContentLoaded', function() {
+			var loginFormDiv = document.getElementById('login-form'); 
+			var registerFormDiv = document.getElementById('register-form');
+			
+			var errorMessagesInRegisterForm = registerFormDiv.querySelectorAll('.error');
+			var shouldShowRegisterFormDueToError = false;
+
+			for (var i = 0; i < errorMessagesInRegisterForm.length; i++) {
+				if (errorMessagesInRegisterForm[i].textContent && errorMessagesInRegisterForm[i].textContent.trim() !== '') {
+					shouldShowRegisterFormDueToError = true;
+					break;
+				}
+			}
+
+			if (shouldShowRegisterFormDueToError) {
+				showRegisterForm();
+			} else {
+				showLoginForm();
+			}
+
+			document.getElementById('show-register').addEventListener('click', showRegisterForm);
+			document.getElementById('show-login').addEventListener('click', showLoginForm);
+		});
+	//]]>
 	</script>
 </h:body>
 </html>

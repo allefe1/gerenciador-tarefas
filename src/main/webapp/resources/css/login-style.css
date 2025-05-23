@@ -50,8 +50,9 @@ body, html {
     font-size: 24px;
     text-align: center;
     font-weight: bold;
-    margin-bottom: 80px;
-    margin-top: -70px;
+    margin-bottom: 40px; /* Reduza um pouco se o -70px era para compensar isso */
+    margin-top: 0;   /* Comece com 0 ou um valor positivo pequeno, ex: 20px */
+                     /* Ou até mesmo remova margin-top completamente se não for necessário */
 }
 .form-group {
     margin-bottom: 20px;

@@ -1,6 +1,6 @@
 package com.gerenciadortarefas.repository;
 
-import java.io.Serializable;
+import java.io.Serializable; // Importe a interface Serializable
 import java.lang.reflect.ParameterizedType;
 import java.util.List;
 
@@ -11,7 +11,10 @@ import javax.persistence.criteria.CriteriaQuery;
 
 import com.gerenciadortarefas.util.JPAUtil;
 
-public abstract class AbstractRepository<T, ID extends Serializable> implements Repository<T, ID> {
+// Adicione "implements Serializable" à declaração da classe
+public abstract class AbstractRepository<T, ID extends Serializable> implements Repository<T, ID>, Serializable {
+    
+    private static final long serialVersionUID = 1L; // Adicione um serialVersionUID
     
     private Class<T> entityClass;
     
@@ -24,9 +27,10 @@ public abstract class AbstractRepository<T, ID extends Serializable> implements 
     @Override
     public T save(T entity) {
         EntityManager em = JPAUtil.getEntityManager();
-        EntityTransaction tx = em.getTransaction();
+        EntityTransaction tx = null; // Inicialize como null
         
         try {
+            tx = em.getTransaction(); // Obtenha a transação aqui
             tx.begin();
             entity = em.merge(entity);
             tx.commit();
@@ -35,18 +39,23 @@ public abstract class AbstractRepository<T, ID extends Serializable> implements 
             if (tx != null && tx.isActive()) {
                 tx.rollback();
             }
-            throw e;
+            // É uma boa prática relançar a exceção encapsulada ou logá-la
+            // throw new RuntimeException("Erro ao salvar entidade: " + e.getMessage(), e); 
+            throw e; // Ou simplesmente relançar como você estava fazendo
         } finally {
-            em.close();
+            if (em != null && em.isOpen()) {
+                em.close();
+            }
         }
     }
     
     @Override
     public void remove(T entity) {
         EntityManager em = JPAUtil.getEntityManager();
-        EntityTransaction tx = em.getTransaction();
+        EntityTransaction tx = null; // Inicialize como null
         
         try {
+            tx = em.getTransaction(); // Obtenha a transação aqui
             tx.begin();
             // Certifique-se de que a entidade está gerenciada antes de remover
             if (!em.contains(entity)) {
@@ -58,10 +67,13 @@ public abstract class AbstractRepository<T, ID extends Serializable> implements 
             if (tx != null && tx.isActive()) {
                 tx.rollback();
             }
-            e.printStackTrace(); // Adicione isso para ver o erro no console
-            throw e;
+            e.printStackTrace(); // Mantido para debug no console
+            // throw new RuntimeException("Erro ao remover entidade: " + e.getMessage(), e);
+            throw e; // Ou simplesmente relançar
         } finally {
-            em.close();
+            if (em != null && em.isOpen()) {
+                em.close();
+            }
         }
     }
     
@@ -71,7 +83,9 @@ public abstract class AbstractRepository<T, ID extends Serializable> implements 
         try {
             return em.find(entityClass, id);
         } finally {
-            em.close();
+            if (em != null && em.isOpen()) {
+                em.close();
+            }
         }
     }
     
@@ -81,10 +95,12 @@ public abstract class AbstractRepository<T, ID extends Serializable> implements 
         try {
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaQuery<T> cq = cb.createQuery(entityClass);
-            cq.from(entityClass);
+            cq.from(entityClass); // Equivalente a "SELECT e FROM entityClass e"
             return em.createQuery(cq).getResultList();
         } finally {
-            em.close();
+            if (em != null && em.isOpen()) {
+                em.close();
+            }
         }
     }
 }

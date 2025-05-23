@@ -1,6 +1,8 @@
 package com.gerenciadortarefas.controller;
 
 import java.io.Serializable;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
@@ -14,52 +16,102 @@ import com.gerenciadortarefas.service.UsuarioService;
 @ManagedBean
 @ViewScoped
 public class LoginBean implements Serializable {
-    
+
     private static final long serialVersionUID = 1L;
-    
+    private static final Logger LOGGER = Logger.getLogger(LoginBean.class.getName());
+
     private String email;
     private String senha;
     private Usuario novoUsuario;
-    
+
     @ManagedProperty("#{sessionBean}")
     private SessionBean sessionBean;
-    
+
     private UsuarioService usuarioService;
-    
+
     public LoginBean() {
         this.usuarioService = new UsuarioService();
         this.novoUsuario = new Usuario();
     }
-    
+
     public String login() {
         try {
-            Usuario usuario = usuarioService.autenticar(email, senha);
-            sessionBean.setUsuarioLogado(usuario);
+            Usuario usuarioAutenticado = usuarioService.autenticar(email, senha);
+
+            // Se chegou aqui sem exceção, a autenticação foi bem-sucedida
+            // (Assumindo que usuarioAutenticado não seria null se não houvesse exceção)
+            if (usuarioAutenticado == null) {
+                // Caso de segurança, se autenticar retornar null em vez de exceção para algum caso não previsto
+                FacesContext.getCurrentInstance().addMessage(null,
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR, "Falha no login", "Usuário não encontrado ou dados inválidos."));
+                this.senha = null;
+                return null;
+            }
+            
+            sessionBean.setUsuarioLogado(usuarioAutenticado);
+            String nomeUsuario = (usuarioAutenticado.getNome() != null && !usuarioAutenticado.getNome().isEmpty())
+                                 ? usuarioAutenticado.getNome()
+                                 : usuarioAutenticado.getEmail();
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_INFO, "Login efetuado!", "Bem-vindo(a), " + nomeUsuario + "!"));
             return "/tarefas?faces-redirect=true";
+
+        } catch (RuntimeException re) {
+            // Verifica se a RuntimeException é por credenciais inválidas
+            if ("Senha incorreta".equals(re.getMessage()) || (re.getCause() != null && "Senha incorreta".equals(re.getCause().getMessage())) ||
+                "Usuário não encontrado".equals(re.getMessage()) || (re.getCause() != null && "Usuário não encontrado".equals(re.getCause().getMessage()))) {
+                LOGGER.log(Level.WARNING, "Tentativa de login falhou para o email " + email + ": " + re.getMessage());
+                FacesContext.getCurrentInstance().addMessage(null,
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR, "Falha no login", "Email ou senha inválidos."));
+            } else {
+                // Outra RuntimeException inesperada do UsuarioService
+                LOGGER.log(Level.SEVERE, "Erro de RuntimeException inesperado durante o login para o email: " + email, re);
+                FacesContext.getCurrentInstance().addMessage(null,
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erro no Login", "Ocorreu um problema durante a autenticação. Por favor, tente novamente."));
+            }
+            this.senha = null;
+            return null;
         } catch (Exception e) {
-            FacesContext.getCurrentInstance().addMessage(null, 
-                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erro de login", e.getMessage()));
+            // Captura qualquer outra exceção genérica e inesperada
+            LOGGER.log(Level.SEVERE, "Erro geral e inesperado durante o login para o email: " + email, e);
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_FATAL, "Erro Crítico", "Ocorreu um problema sistêmico inesperado. Por favor, contate o suporte."));
+            this.senha = null;
             return null;
         }
     }
-    
+
     public String cadastrar() {
         try {
             usuarioService.cadastrar(novoUsuario);
-            FacesContext.getCurrentInstance().addMessage(null, 
-                    new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", "Usuário cadastrado com sucesso!"));
-            novoUsuario = new Usuario();
-            return null; // Permanece na mesma página
+            String nomeNovoUsuario = novoUsuario.getNome() != null && !novoUsuario.getNome().isEmpty()
+                                     ? novoUsuario.getNome()
+                                     : novoUsuario.getEmail();
+
+            // Adicionando a mensagem ao escopo Flash para sobreviver ao redirect
+            FacesContext facesContext = FacesContext.getCurrentInstance();
+            facesContext.getExternalContext().getFlash().setKeepMessages(true); // Importante! Diz ao JSF para manter as mensagens para a próxima view.
+            facesContext.addMessage(null, // Mensagem global
+                    new FacesMessage(FacesMessage.SEVERITY_INFO, "Cadastro Realizado!", "Usuário '" + nomeNovoUsuario + "' cadastrado com sucesso! Você já pode fazer o login."));
+
+            novoUsuario = new Usuario(); // Limpa o objeto para um possível novo cadastro
+            return "login?faces-redirect=true"; // Redireciona para a página de login
+
         } catch (Exception e) {
-            FacesContext.getCurrentInstance().addMessage(null, 
-                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erro", e.getMessage()));
+            LOGGER.log(Level.SEVERE, "Erro ao tentar cadastrar usuário: " + (novoUsuario != null ? novoUsuario.getEmail() : "novoUsuario era null"), e);
+            String mensagemErroDetalhada = e.getMessage() != null && !e.getMessage().trim().isEmpty() ? e.getMessage() : "Não foi possível concluir o cadastro.";
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erro no Cadastro", mensagemErroDetalhada));
+            
+            // Se o cadastro falhar, permanecemos na mesma página (formulário de cadastro).
+            // O JavaScript no login.xhtml deverá manter o formulário de cadastro visível.
             return null;
         }
     }
-    
+
     public String prepararCadastro() {
         this.novoUsuario = new Usuario();
-        return null; // Permanece na mesma página, mas mostra o formulário de cadastro
+        return "cadastro?faces-redirect=true"; // Ajuste para o nome da sua página de cadastro
     }
 
     // Getters e Setters

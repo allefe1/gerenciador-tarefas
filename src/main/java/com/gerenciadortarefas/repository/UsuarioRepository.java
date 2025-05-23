@@ -1,5 +1,6 @@
 package com.gerenciadortarefas.repository;
 
+import java.io.Serializable; // Importe a interface Serializable
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
@@ -8,7 +9,9 @@ import java.util.List;
 import com.gerenciadortarefas.model.Usuario;
 import com.gerenciadortarefas.util.JPAUtil;
 
-public class UsuarioRepository extends AbstractRepository<Usuario, Long> {
+public class UsuarioRepository extends AbstractRepository<Usuario, Long> implements Serializable { // Adicione "implements Serializable"
+    
+    private static final long serialVersionUID = 1L; // Adicione um serialVersionUID
     
     public Usuario findByEmail(String email) {
         EntityManager em = JPAUtil.getEntityManager();
@@ -20,7 +23,9 @@ public class UsuarioRepository extends AbstractRepository<Usuario, Long> {
         } catch (NoResultException e) {
             return null;
         } finally {
-            em.close();
+            if (em != null && em.isOpen()) { // Boa prática verificar se está aberto antes de fechar
+                em.close();
+            }
         }
     }
     
@@ -32,7 +37,9 @@ public class UsuarioRepository extends AbstractRepository<Usuario, Long> {
             query.setParameter("email", email);
             return query.getSingleResult() > 0;
         } finally {
-            em.close();
+            if (em != null && em.isOpen()) {
+                em.close();
+            }
         }
     }
     
@@ -45,8 +52,9 @@ public class UsuarioRepository extends AbstractRepository<Usuario, Long> {
         try {
             return em.createQuery("FROM Usuario", Usuario.class).getResultList();
         } finally {
-            em.close();
+            if (em != null && em.isOpen()) {
+                em.close();
+            }
         }
     }
-    
 }
