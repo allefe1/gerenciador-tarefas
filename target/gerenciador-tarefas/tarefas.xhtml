@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+<ui:composition template="/WEB-INF/templates/template.xhtml">
+	<ui:define name="content">
+		<h2>Gerenciar Tarefas</h2>
+
+		<!-- Botão para mostrar/ocultar o formulário -->
+		<h:form id="toggleForm">
+			<h:commandButton
+				value="#{tarefaBean.mostrarFormulario ? 'Cancelar' : 'Nova Tarefa'}"
+				action="#{tarefaBean.toggleFormulario}"
+				styleClass="#{tarefaBean.mostrarFormulario ? 'btn btn-warning' : 'btn'}"
+				style="margin-bottom: 15px;">
+				<f:ajax execute="@this" render="toggleForm formNovaTarefa" />
+			</h:commandButton>
+		</h:form>
+
+		<!-- Formulário sempre presente no DOM, mas visibilidade controlada por CSS -->
+		<h:form id="formNovaTarefa"
+			style="#{tarefaBean.mostrarFormulario ? 'display:block;' : 'display:none;'}">
+			<h3>#{empty tarefaBean.tarefa.id ? 'Nova Tarefa' : 'Editar
+				Tarefa'}</h3>
+
+			<div class="form-group">
+				<h:outputLabel for="titulo" value="Título:" />
+				<h:inputText id="titulo" value="#{tarefaBean.tarefa.titulo}"
+					required="true" requiredMessage="Título é obrigatório"
+					validatorMessage="O título deve ter entre 3 e 100 caracteres"
+					styleClass="form-control" style="width: 100%;">
+					<f:validateLength minimum="3" maximum="100" />
+				</h:inputText>
+				<h:message for="titulo" styleClass="error" />
+			</div>
+
+			<div class="form-group">
+				<h:outputLabel for="descricao" value="Descrição:" />
+				<h:inputTextarea id="descricao"
+					value="#{tarefaBean.tarefa.descricao}"
+					validatorMessage="A descrição não pode ter mais de 500 caracteres"
+					styleClass="form-control" style="width: 100%; height: 100px;">
+					<f:validateLength maximum="500" />
+				</h:inputTextarea>
+				<h:message for="descricao" styleClass="error" />
+			</div>
+
+			<div class="form-group">
+				<h:outputLabel for="prioridade" value="Prioridade:" />
+				<h:selectOneMenu id="prioridade"
+					value="#{tarefaBean.tarefa.prioridade}" styleClass="form-control"
+					style="width: 100%;">
+					<f:selectItems value="#{tarefaBean.prioridadeValues}"
+						var="prioridade" itemLabel="#{prioridade}"
+						itemValue="#{prioridade}" />
+				</h:selectOneMenu>
+			</div>
+
+			<!-- Campo de seleção de responsável adicionado aqui -->
+			<div class="form-group">
+				<h:outputLabel for="responsavel" value="Responsável:" />
+				<h:selectOneMenu id="responsavel"
+					value="#{tarefaBean.responsavelSelecionado}"
+					converter="usuarioConverter" styleClass="form-control">
+					<f:selectItem itemLabel="Selecione um responsável"
+						itemValue="#{null}" />
+					<f:selectItems value="#{tarefaBean.usuarios}" var="usuario"
+						itemLabel="#{usuario.nome}" itemValue="#{usuario}" />
+				</h:selectOneMenu>
+			</div>
+
+			<div class="form-group">
+				<h:commandButton value="Salvar" action="#{tarefaBean.salvar}"
+					styleClass="btn">
+					<f:ajax execute="@form" render="@form tabelaTarefas toggleForm" />
+				</h:commandButton>
+			</div>
+		</h:form>
+
+		<hr />
+
+		<h3>Minhas Tarefas</h3>
+
+		<h:form id="formFiltros">
+			<div style="display: flex; margin-bottom: 15px;">
+				<div style="margin-right: 15px;">
+					<h:outputLabel for="filtroStatus" value="Filtrar por Status: " />
+					<h:selectOneMenu id="filtroStatus"
+						value="#{tarefaBean.filtroStatus}" styleClass="form-control">
+						<f:selectItem itemLabel="Todos" itemValue="#{null}"
+							noSelectionOption="true" />
+						<f:selectItems value="#{tarefaBean.statusValues}" var="status"
+							itemLabel="#{status}" itemValue="#{status}" />
+						<f:ajax execute="@this" render="tabelaTarefas" />
+					</h:selectOneMenu>
+				</div>
+
+				<div style="margin-right: 15px;">
+					<h:outputLabel for="filtroPrioridade"
+						value="Filtrar por Prioridade: " />
+					<h:selectOneMenu id="filtroPrioridade"
+						value="#{tarefaBean.filtroPrioridade}" styleClass="form-control">
+						<f:selectItem itemLabel="Todos" itemValue="#{null}"
+							noSelectionOption="true" />
+						<f:selectItems value="#{tarefaBean.prioridadeValues}"
+							var="prioridade" itemLabel="#{prioridade}"
+							itemValue="#{prioridade}" />
+						<f:ajax execute="@this" render="tabelaTarefas" />
+					</h:selectOneMenu>
+				</div>
+
+				<div style="text-align: center; margin-top: 20px;">
+					<h:commandButton value="Limpar Filtros"
+						action="#{tarefaBean.limparFiltros}" styleClass="btn"
+						style="display: inline-block;">
+						<f:ajax execute="@this"
+							render="tabelaTarefas filtroStatus filtroPrioridade" />
+					</h:commandButton>
+				</div>
+			</div>
+		</h:form>
+
+		<h:form id="tabelaTarefas">
+			<h:dataTable value="#{tarefaBean.tarefas}" var="tarefa"
+				styleClass="table" rendered="#{not empty tarefaBean.tarefas}">
+				<h:column>
+					<f:facet name="header">Título</f:facet>
+        #{tarefa.titulo}
+    </h:column>
+
+				<h:column>
+					<f:facet name="header">Descrição</f:facet>
+        #{tarefa.descricao}
+    </h:column>
+
+				<h:column>
+					<f:facet name="header">Status</f:facet>
+        #{tarefa.status}
+    </h:column>
+
+				<h:column>
+					<f:facet name="header">Prioridade</f:facet>
+        #{tarefa.prioridade}
+    </h:column>
+
+				<h:column>
+					<f:facet name="header">Data Criação</f:facet>
+					<h:outputText value="#{tarefa.dataCriacao}">
+						<f:convertDateTime pattern="dd/MM/yyyy HH:mm" />
+					</h:outputText>
+				</h:column>
+
+				<h:column>
+					<f:facet name="header">Ações</f:facet>
+					<h:commandButton value="Editar" styleClass="btn btn-warning"
+						style="margin-right: 5px;">
+						<f:setPropertyActionListener
+							target="#{tarefaBean.tarefaParaEditar}" value="#{tarefa}" />
+						<f:ajax execute="@this" render="formNovaTarefa toggleForm" />
+					</h:commandButton>
+
+					<h:commandButton value="Excluir" action="#{tarefaBean.excluir}"
+						styleClass="btn btn-danger" style="margin-right: 5px;"
+						onclick="return confirm('Tem certeza que deseja excluir esta tarefa?');">
+						<f:setPropertyActionListener
+							target="#{tarefaBean.tarefaSelecionadaId}" value="#{tarefa.id}" />
+						<f:ajax execute="@this" render="@form" />
+					</h:commandButton>
+
+					<h:commandButton value="Concluir" action="#{tarefaBean.concluir}"
+						styleClass="btn" style="margin-right: 5px;"
+						rendered="#{tarefa.status eq 'PENDENTE'}">
+						<f:setPropertyActionListener
+							target="#{tarefaBean.tarefaSelecionadaId}" value="#{tarefa.id}" />
+						<f:ajax execute="@this" render="tabelaTarefas" />
+					</h:commandButton>
+
+					<h:commandButton value="Reabrir" action="#{tarefaBean.reabrir}"
+						styleClass="btn" style="background-color: #2196F3;"
+						rendered="#{tarefa.status eq 'CONCLUIDA'}">
+						<f:setPropertyActionListener
+							target="#{tarefaBean.tarefaSelecionadaId}" value="#{tarefa.id}" />
+						<f:ajax execute="@this" render="tabelaTarefas" />
+					</h:commandButton>
+				</h:column>
+			</h:dataTable>
+
+			<h:panelGroup rendered="#{empty tarefaBean.tarefas}">
+				<p>Nenhuma tarefa encontrada.</p>
+			</h:panelGroup>
+		</h:form>
+	</ui:define>
+</ui:composition>
+</html>

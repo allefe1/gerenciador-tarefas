@@ -3,32 +3,20 @@
              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
              xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd"
              version="2.1">
-             
+
     <persistence-unit name="gerenciadorTarefasPU" transaction-type="RESOURCE_LOCAL">
-        <!-- Provedor/implementação do JPA -->
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
-        
+
         <class>com.gerenciadortarefas.model.Usuario</class>
     	<class>com.gerenciadortarefas.model.Tarefa</class>
-        <!-- Aqui você listará suas entidades quando criá-las -->
-        <!-- <class>com.seuprojeto.gerenciador.model.Usuario</class> -->
-        <!-- <class>com.seuprojeto.gerenciador.model.Tarefa</class> -->
-        
         <properties>
-            <!-- Dados da conexão -->
             <property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver" />
-            <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://localhost:5432/gerenciador_tarefas" />
-            <property name="javax.persistence.jdbc.user" value="postgres" />
-            <property name="javax.persistence.jdbc.password" value="admin" />
-            
-            <!-- Propriedades do Hibernate -->
+
             <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQL95Dialect" />
             <property name="hibernate.show_sql" value="true" />
             <property name="hibernate.format_sql" value="true" />
-            
-            <!-- Atualiza o banco, gera as tabelas se necessário -->
+
             <property name="hibernate.hbm2ddl.auto" value="update" />
         </properties>
     </persistence-unit>
 </persistence>
-	

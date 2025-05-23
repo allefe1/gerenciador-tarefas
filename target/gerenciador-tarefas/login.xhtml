@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core">
+<h:head>
+	<title>Gerenciador de Tarefas - Login</title>
+	<meta charset="UTF-8" />
+	<h:outputStylesheet library="css" name="login-style.css" />
+</h:head>
+<h:body>
+	<div class="split-container">
+		<!-- Lado Esquerdo - Formulário de Login -->
+		<div class="left-side">
+			<div class="app-title">Gerenciador de Tarefas</div>
+
+			<!-- Formulário de Login (visível por padrão) -->
+			<div id="login-form">
+				<h2>Login</h2>
+				<p>Entre com sua conta e melhore sua produtividade</p>
+
+				<h:form>
+					<div class="form-group">
+						<h:outputLabel for="email" value="E-mail:" />
+						<h:inputText id="email" value="#{loginBean.email}" required="true"
+							requiredMessage="Email é obrigatório" styleClass="form-control" />
+						<h:message for="email" styleClass="error" />
+					</div>
+
+					<div class="form-group">
+						<h:outputLabel for="senha" value="Senha:" />
+						<h:inputSecret id="senha" value="#{loginBean.senha}"
+							required="true" requiredMessage="Senha é obrigatória"
+							styleClass="form-control" />
+						<h:message for="senha" styleClass="error" />
+					</div>
+
+					<div class="form-group">
+						<h:commandButton value="Entrar" action="#{loginBean.login}"
+							styleClass="btn" />
+					</div>
+				</h:form>
+
+				<div class="separator">ou</div>
+
+				<div class="form-group">
+					<button id="show-register" class="btn btn-register"
+						style="background-color: #1a472a;">Se inscreva</button>
+				</div>
+			</div>
+
+			<!-- Formulário de Registro (inicialmente oculto) -->
+			<div id="register-form" style="display: none;">
+				<h2>Cadastre-se</h2>
+				<p>Crie sua conta e comece a gerenciar suas tarefas</p>
+
+				<h:form>
+					<div class="form-group">
+						<h:outputLabel for="nome" value="Nome:" />
+						<h:inputText id="nome" value="#{loginBean.novoUsuario.nome}"
+							required="true" requiredMessage="Nome é obrigatório"
+							styleClass="form-control" />
+						<h:message for="nome" styleClass="error" />
+					</div>
+
+					<div class="form-group">
+						<h:outputLabel for="emailCadastro" value="E-mail:" />
+						<h:inputText id="emailCadastro"
+							value="#{loginBean.novoUsuario.email}" required="true"
+							requiredMessage="Email é obrigatório"
+							validatorMessage="Email inválido" styleClass="form-control">
+							<f:validateRegex
+								pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$" />
+						</h:inputText>
+						<h:message for="emailCadastro" styleClass="error" />
+					</div>
+
+					<div class="form-group">
+						<h:outputLabel for="senhaCadastro" value="Senha:" />
+						<h:inputSecret id="senhaCadastro"
+							value="#{loginBean.novoUsuario.senha}" required="true"
+							requiredMessage="Senha é obrigatória"
+							validatorMessage="A senha deve ter pelo menos 6 caracteres"
+							styleClass="form-control">
+							<f:validateLength minimum="6" />
+						</h:inputSecret>
+						<h:message for="senhaCadastro" styleClass="error" />
+					</div>
+
+					<div class="form-group">
+						<h:commandButton value="Cadastrar" action="#{loginBean.cadastrar}"
+							styleClass="btn btn-cadastrar" />
+					</div>
+				</h:form>
+
+				<div class="separator">ou</div>
+
+				<div class="form-group">
+					<button id="show-login" class="btn"
+						style="background-color: #1a472a;">Já tenho conta</button>
+				</div>
+			</div>
+		</div>
+
+		<!-- Lado Direito - Imagem e Texto Promocional -->
+		<div class="right-side">
+			<div class="right-side-content">
+				<h1>Sua produtividade começa aqui.</h1>
+				<p>Transforme sua produtividade com nosso Gerenciador de Tarefas
+					- simples, intuitivo e eficaz!</p>
+			</div>
+		</div>
+	</div>
+
+	<script type="text/javascript">
+		document
+				.getElementById('show-register')
+				.addEventListener(
+						'click',
+						function() {
+							document.getElementById('login-form').style.display = 'none';
+							document.getElementById('register-form').style.display = 'block';
+						});
+
+		document
+				.getElementById('show-login')
+				.addEventListener(
+						'click',
+						function() {
+							document.getElementById('register-form').style.display = 'none';
+							document.getElementById('login-form').style.display = 'block';
+						});
+	</script>
+</h:body>
+</html>
