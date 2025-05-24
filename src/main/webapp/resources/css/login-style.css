@@ -50,9 +50,9 @@ body, html {
     font-size: 24px;
     text-align: center;
     font-weight: bold;
-    margin-bottom: 40px; /* Reduza um pouco se o -70px era para compensar isso */
-    margin-top: 0;   /* Comece com 0 ou um valor positivo pequeno, ex: 20px */
-                     /* Ou até mesmo remova margin-top completamente se não for necessário */
+    margin-bottom: 40px; 
+    margin-top: 0;   
+                     
 }
 .form-group {
     margin-bottom: 20px;
@@ -70,7 +70,7 @@ body, html {
 }
 .btn {
     padding: 10px 15px;
-    background-color: #1a472a; /* Verde escuro */
+    background-color: #1a472a; 
     color: white;
     border: none;
     border-radius: 4px;
@@ -79,7 +79,7 @@ body, html {
 }
 
 .btn-cadastrar {
-    background-color: #1a472a !important; /* Marrom */
+    background-color: #1a472a !important; 
     color: white;
 }
 
@@ -130,7 +130,7 @@ body, html {
         flex-direction: column;
     }
     .right-side {
-        display: none; /* Oculta a imagem em telas pequenas */
+        display: none; 
     }
     .left-side {
         width: 100%;

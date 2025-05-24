@@ -1,14 +1,14 @@
 package com.gerenciadortarefas.service;
 
-import java.io.Serializable; // Importe a interface Serializable
+import java.io.Serializable; 
 import java.util.List;
 import com.gerenciadortarefas.model.Usuario;
 import com.gerenciadortarefas.repository.UsuarioRepository;
 import com.gerenciadortarefas.util.PasswordUtil;
 
-public class UsuarioService implements Serializable { // Adicione "implements Serializable"
+public class UsuarioService implements Serializable { 
     
-    private static final long serialVersionUID = 1L; // Adicione um serialVersionUID
+    private static final long serialVersionUID = 1L; 
 
     private UsuarioRepository usuarioRepository;
     
@@ -17,7 +17,7 @@ public class UsuarioService implements Serializable { // Adicione "implements Se
     }
     
     public Usuario cadastrar(Usuario usuario) {
-        // Verifica se já existe usuário com o mesmo email
+        
         if (usuarioRepository.existsWithEmail(usuario.getEmail())) {
             throw new RuntimeException("Email já cadastrado. Por favor, utilize outro email.");
         }
@@ -26,7 +26,7 @@ public class UsuarioService implements Serializable { // Adicione "implements Se
         if (usuario.getSenha() == null || usuario.getSenha().trim().isEmpty()) {
             throw new RuntimeException("A senha não pode ser vazia.");
         }
-        // Você também pode adicionar validações de força de senha aqui, se desejar.
+        
 
         // Criptografa a senha antes de salvar
         String senhaCriptografada = PasswordUtil.hashPassword(usuario.getSenha());
@@ -40,9 +40,9 @@ public class UsuarioService implements Serializable { // Adicione "implements Se
         
         if (usuario == null) {
             // Não especifique se é o usuário ou a senha que está errada por segurança
-            // A mensagem "Usuário não encontrado" pode ser um problema de segurança (enumeração de usuários)
-            // É melhor uma mensagem genérica como "Email ou senha inválidos." que o LoginBean já trata.
-            // Mas, para manter a lógica atual do seu LoginBean que verifica a mensagem:
+            
+            
+            
             throw new RuntimeException("Usuário não encontrado"); 
         }
         
@@ -68,17 +68,17 @@ public class UsuarioService implements Serializable { // Adicione "implements Se
             throw new RuntimeException("Usuário com ID " + usuario.getId() + " não encontrado para atualização.");
         }
 
-        // Se uma nova senha foi fornecida (não nula e não vazia), criptografa e atualiza
+        
         if (usuario.getSenha() != null && !usuario.getSenha().trim().isEmpty()) {
             // Validação de força da nova senha pode ser adicionada aqui
             String senhaCriptografada = PasswordUtil.hashPassword(usuario.getSenha());
             usuario.setSenha(senhaCriptografada);
         } else {
-            // Se nenhuma nova senha foi fornecida, mantém a senha antiga do banco
+            
             usuario.setSenha(usuarioExistente.getSenha());
         }
         
-        // Atualiza outros campos (nome, email, etc., se necessário, com validações)
+        
         // Exemplo: se o email for alterado, verificar se o novo email já existe para outro usuário
         if (usuario.getEmail() != null && !usuario.getEmail().equals(usuarioExistente.getEmail())) {
             if (usuarioRepository.existsWithEmail(usuario.getEmail())) {
@@ -86,7 +86,7 @@ public class UsuarioService implements Serializable { // Adicione "implements Se
             }
         }
         
-        return usuarioRepository.save(usuario); // O método save do repositório deve lidar com merge/update
+        return usuarioRepository.save(usuario); 
     }
     
     public List<Usuario> listarTodos() {

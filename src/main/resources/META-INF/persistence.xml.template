@@ -10,9 +10,7 @@
         
         <class>com.gerenciadortarefas.model.Usuario</class>
     	<class>com.gerenciadortarefas.model.Tarefa</class>
-        <!-- Aqui você listará suas entidades quando criá-las -->
-        <!-- <class>com.seuprojeto.gerenciador.model.Usuario</class> -->
-        <!-- <class>com.seuprojeto.gerenciador.model.Tarefa</class> -->
+        
         
         <properties>
             <!-- Dados da conexão -->

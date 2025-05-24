@@ -66,7 +66,7 @@ public class TarefaBeanTest {
         setField(tarefaBean, "facesContextWrapper", facesContextWrapper);
     }
     
-    // Não precisamos mais do tearDown que usava FacesContextMocker
+    
     
     // Utilitário para definir campos privados via reflexão
     private void setField(Object target, String fieldName, Object value) {

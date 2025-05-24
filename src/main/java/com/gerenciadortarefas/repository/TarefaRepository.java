@@ -1,6 +1,6 @@
 package com.gerenciadortarefas.repository;
 
-import java.io.Serializable; // Necessário para o serialVersionUID, e a classe se torna serializável
+import java.io.Serializable; 
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -11,11 +11,11 @@ import com.gerenciadortarefas.model.Tarefa;
 import com.gerenciadortarefas.model.Usuario;
 import com.gerenciadortarefas.util.JPAUtil;
 
-// Embora AbstractRepository já implemente Serializable, não faz mal declarar aqui também se desejar,
-// mas o importante é o serialVersionUID.
+
+
 public class TarefaRepository extends AbstractRepository<Tarefa, Long> implements Serializable {
 
-    private static final long serialVersionUID = 1L; // Adicionado para a serialização
+    private static final long serialVersionUID = 1L; 
 
     public List<Tarefa> findByUsuario(Usuario usuario) {
         EntityManager em = JPAUtil.getEntityManager();

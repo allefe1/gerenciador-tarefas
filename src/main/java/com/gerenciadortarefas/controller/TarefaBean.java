@@ -37,7 +37,7 @@ public class TarefaBean implements Serializable {
     private Long tarefaSelecionadaId;
     private boolean mostrarFormulario = false;
     
-    // Novos campos para o responsável
+    
     private List<Usuario> usuarios;
     private Usuario responsavelSelecionado;
     
@@ -99,7 +99,7 @@ public class TarefaBean implements Serializable {
         Set<Tarefa> tarefasUnicas = new LinkedHashSet<>(tarefasCombinadas);
         List<Tarefa> tarefasFiltradas = new ArrayList<>(tarefasUnicas);
 
-        // Aplica filtros
+        
         if (filtroStatus != null) {
             tarefasFiltradas = tarefasFiltradas.stream()
                 .filter(t -> t.getStatus() == filtroStatus)
@@ -126,7 +126,7 @@ public class TarefaBean implements Serializable {
     }
     
     public String filtrarPorPrioridade() {
-        // Se a prioridade for null, limpa o filtro de status também
+        
         if (filtroPrioridade == null) {
             filtroStatus = null;
         }
@@ -144,7 +144,7 @@ public class TarefaBean implements Serializable {
     public String toggleFormulario() {
         this.mostrarFormulario = !this.mostrarFormulario;
         
-        // Se estiver fechando o formulário, limpe os dados da tarefa
+        
         if (!mostrarFormulario) {
             this.tarefa = new Tarefa();
             this.responsavelSelecionado = null;
@@ -176,7 +176,7 @@ public class TarefaBean implements Serializable {
                 System.out.println("Definindo responsável: " + responsavelSelecionado.getNome() + " (ID: " + responsavelSelecionado.getId() + ")");
             }
             
-            // Usar EntityManager diretamente para salvar
+            
             EntityManager em = JPAUtil.getEntityManager();
             EntityTransaction tx = em.getTransaction();
             
@@ -184,7 +184,7 @@ public class TarefaBean implements Serializable {
                 tx.begin();
                 System.out.println("Transação iniciada");
                 
-                // Verifica se é uma nova tarefa ou atualização
+                
                 if (tarefa.getId() == null) {
                     System.out.println("Inserindo nova tarefa");
                     em.persist(tarefa);
@@ -231,11 +231,11 @@ public class TarefaBean implements Serializable {
         return null;
     }
     
-    // Métodos para edição - separados para funcionar com f:setPropertyActionListener
+    
     public void setTarefaParaEditar(Tarefa tarefa) {
         this.tarefa = tarefa;
-        this.responsavelSelecionado = tarefa.getResponsavel(); // Carrega o responsável atual
-        this.mostrarFormulario = true; // Mostra o formulário ao editar
+        this.responsavelSelecionado = tarefa.getResponsavel(); 
+        this.mostrarFormulario = true; 
     }
     
     // Métodos para exclusão
@@ -278,7 +278,7 @@ public class TarefaBean implements Serializable {
         }
     }
     
-    // Métodos para concluir
+    
     public void setTarefaParaConcluir(Long id) {
         this.tarefaSelecionadaId = id;
     }
@@ -297,7 +297,7 @@ public class TarefaBean implements Serializable {
         return null;
     }
     
-    // Métodos para reabrir
+    
     public void setTarefaParaReabrir(Long id) {
         this.tarefaSelecionadaId = id;
     }
@@ -316,7 +316,7 @@ public class TarefaBean implements Serializable {
         return null;
     }
     
-    // Getters e Setters
+    
     public Tarefa getTarefa() {
         return tarefa;
     }
@@ -340,7 +340,7 @@ public class TarefaBean implements Serializable {
     public void setFiltroStatus(StatusTarefa filtroStatus) {
         this.filtroStatus = filtroStatus;
         
-        // Se o status for null, limpa o filtro de prioridade também
+        
         if (filtroStatus == null) {
             filtroPrioridade = null;
         }
@@ -355,7 +355,7 @@ public class TarefaBean implements Serializable {
     public void setFiltroPrioridade(PrioridadeTarefa filtroPrioridade) {
         this.filtroPrioridade = filtroPrioridade;
         
-        // Se a prioridade for null, limpa o filtro de status também
+        
         if (filtroPrioridade == null) {
             filtroStatus = null;
         }

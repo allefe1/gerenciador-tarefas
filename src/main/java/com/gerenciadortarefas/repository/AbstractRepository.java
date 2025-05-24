@@ -39,9 +39,9 @@ public abstract class AbstractRepository<T, ID extends Serializable> implements 
             if (tx != null && tx.isActive()) {
                 tx.rollback();
             }
-            // É uma boa prática relançar a exceção encapsulada ou logá-la
+            
             // throw new RuntimeException("Erro ao salvar entidade: " + e.getMessage(), e); 
-            throw e; // Ou simplesmente relançar como você estava fazendo
+            throw e; 
         } finally {
             if (em != null && em.isOpen()) {
                 em.close();
@@ -52,12 +52,12 @@ public abstract class AbstractRepository<T, ID extends Serializable> implements 
     @Override
     public void remove(T entity) {
         EntityManager em = JPAUtil.getEntityManager();
-        EntityTransaction tx = null; // Inicialize como null
+        EntityTransaction tx = null; 
         
         try {
             tx = em.getTransaction(); // Obtenha a transação aqui
             tx.begin();
-            // Certifique-se de que a entidade está gerenciada antes de remover
+            
             if (!em.contains(entity)) {
                 entity = em.merge(entity);
             }
@@ -68,8 +68,8 @@ public abstract class AbstractRepository<T, ID extends Serializable> implements 
                 tx.rollback();
             }
             e.printStackTrace(); // Mantido para debug no console
-            // throw new RuntimeException("Erro ao remover entidade: " + e.getMessage(), e);
-            throw e; // Ou simplesmente relançar
+            
+            throw e; //
         } finally {
             if (em != null && em.isOpen()) {
                 em.close();
@@ -95,7 +95,7 @@ public abstract class AbstractRepository<T, ID extends Serializable> implements 
         try {
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaQuery<T> cq = cb.createQuery(entityClass);
-            cq.from(entityClass); // Equivalente a "SELECT e FROM entityClass e"
+            cq.from(entityClass); 
             return em.createQuery(cq).getResultList();
         } finally {
             if (em != null && em.isOpen()) {

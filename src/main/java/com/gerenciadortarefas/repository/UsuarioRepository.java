@@ -1,6 +1,6 @@
 package com.gerenciadortarefas.repository;
 
-import java.io.Serializable; // Importe a interface Serializable
+import java.io.Serializable; 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
@@ -9,9 +9,9 @@ import java.util.List;
 import com.gerenciadortarefas.model.Usuario;
 import com.gerenciadortarefas.util.JPAUtil;
 
-public class UsuarioRepository extends AbstractRepository<Usuario, Long> implements Serializable { // Adicione "implements Serializable"
+public class UsuarioRepository extends AbstractRepository<Usuario, Long> implements Serializable { 
     
-    private static final long serialVersionUID = 1L; // Adicione um serialVersionUID
+    private static final long serialVersionUID = 1L; 
     
     public Usuario findByEmail(String email) {
         EntityManager em = JPAUtil.getEntityManager();
@@ -23,7 +23,7 @@ public class UsuarioRepository extends AbstractRepository<Usuario, Long> impleme
         } catch (NoResultException e) {
             return null;
         } finally {
-            if (em != null && em.isOpen()) { // Boa prática verificar se está aberto antes de fechar
+            if (em != null && em.isOpen()) { 
                 em.close();
             }
         }

@@ -38,8 +38,8 @@ public class LoginBean implements Serializable {
         try {
             Usuario usuarioAutenticado = usuarioService.autenticar(email, senha);
 
-            // Se chegou aqui sem exceção, a autenticação foi bem-sucedida
-            // (Assumindo que usuarioAutenticado não seria null se não houvesse exceção)
+            
+            
             if (usuarioAutenticado == null) {
                 // Caso de segurança, se autenticar retornar null em vez de exceção para algum caso não previsto
                 FacesContext.getCurrentInstance().addMessage(null,
@@ -57,14 +57,14 @@ public class LoginBean implements Serializable {
             return "/tarefas?faces-redirect=true";
 
         } catch (RuntimeException re) {
-            // Verifica se a RuntimeException é por credenciais inválidas
+            
             if ("Senha incorreta".equals(re.getMessage()) || (re.getCause() != null && "Senha incorreta".equals(re.getCause().getMessage())) ||
                 "Usuário não encontrado".equals(re.getMessage()) || (re.getCause() != null && "Usuário não encontrado".equals(re.getCause().getMessage()))) {
                 LOGGER.log(Level.WARNING, "Tentativa de login falhou para o email " + email + ": " + re.getMessage());
                 FacesContext.getCurrentInstance().addMessage(null,
                         new FacesMessage(FacesMessage.SEVERITY_ERROR, "Falha no login", "Email ou senha inválidos."));
             } else {
-                // Outra RuntimeException inesperada do UsuarioService
+                // 
                 LOGGER.log(Level.SEVERE, "Erro de RuntimeException inesperado durante o login para o email: " + email, re);
                 FacesContext.getCurrentInstance().addMessage(null,
                         new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erro no Login", "Ocorreu um problema durante a autenticação. Por favor, tente novamente."));
@@ -90,12 +90,12 @@ public class LoginBean implements Serializable {
 
             // Adicionando a mensagem ao escopo Flash para sobreviver ao redirect
             FacesContext facesContext = FacesContext.getCurrentInstance();
-            facesContext.getExternalContext().getFlash().setKeepMessages(true); // Importante! Diz ao JSF para manter as mensagens para a próxima view.
+            facesContext.getExternalContext().getFlash().setKeepMessages(true); // diz ao JSF para manter as mensagens para a próxima view.
             facesContext.addMessage(null, // Mensagem global
                     new FacesMessage(FacesMessage.SEVERITY_INFO, "Cadastro Realizado!", "Usuário '" + nomeNovoUsuario + "' cadastrado com sucesso! Você já pode fazer o login."));
 
-            novoUsuario = new Usuario(); // Limpa o objeto para um possível novo cadastro
-            return "login?faces-redirect=true"; // Redireciona para a página de login
+            novoUsuario = new Usuario(); 
+            return "login?faces-redirect=true"; 
 
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Erro ao tentar cadastrar usuário: " + (novoUsuario != null ? novoUsuario.getEmail() : "novoUsuario era null"), e);
@@ -103,18 +103,17 @@ public class LoginBean implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null,
                     new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erro no Cadastro", mensagemErroDetalhada));
             
-            // Se o cadastro falhar, permanecemos na mesma página (formulário de cadastro).
-            // O JavaScript no login.xhtml deverá manter o formulário de cadastro visível.
+            
             return null;
         }
     }
 
     public String prepararCadastro() {
         this.novoUsuario = new Usuario();
-        return "cadastro?faces-redirect=true"; // Ajuste para o nome da sua página de cadastro
+        return "cadastro?faces-redirect=true"; 
     }
 
-    // Getters e Setters
+    
     public String getEmail() {
         return email;
     }
