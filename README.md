@@ -1,6 +1,6 @@
 # 📋 Gerenciador de Tarefas
 
-O Gerenciador de Tarefas é uma aplicação web Java que permite aos usuários gerenciar suas tarefas diárias de forma eficiente. O sistema oferece funcionalidades de cadastro de usuários, login seguro, e um painel para criar, editar, filtrar, Visualizar data final (DeadLine) e gerenciar tarefas com diferentes prioridades e status.
+O Gerenciador de Tarefas é uma aplicação web Java MVC que permite aos usuários gerenciar suas tarefas diárias de forma eficiente. O sistema oferece funcionalidades de cadastro de usuários, login seguro, e um painel para criar, editar, filtrar, Visualizar data final (DeadLine) e gerenciar tarefas com diferentes prioridades e status.
 
 ## 🌐 Demonstração Online
 
