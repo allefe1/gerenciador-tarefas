@@ -1,6 +1,6 @@
 # 📋 Gerenciador de Tarefas
 
-O Gerenciador de Tarefas é uma aplicação web Java que permite aos usuários gerenciar suas tarefas diárias de forma eficiente. O sistema oferece funcionalidades de cadastro de usuários, login seguro, e um painel para criar, editar, filtrar e gerenciar tarefas com diferentes prioridades e status.
+O Gerenciador de Tarefas é uma aplicação web Java que permite aos usuários gerenciar suas tarefas diárias de forma eficiente. O sistema oferece funcionalidades de cadastro de usuários, login seguro, e um painel para criar, editar, filtrar, Visualizar data final (DeadLine) e gerenciar tarefas com diferentes prioridades e status.
 
 ## 🌐 Demonstração Online
 
@@ -67,7 +67,7 @@ O sistema utiliza PostgreSQL com duas tabelas principais:
 - Senhas são armazenadas com hash MD5 para segurança
 
 ### 2. Tabela de Tarefas (tarefas)
-- Armazena as tarefas dos usuários (id, titulo, descricao, status, prioridade, data_criacao, data_conclusao)
+- Armazena as tarefas dos usuários (id, titulo, descricao, status, prioridade, data_criacao, data-deadline)
 - Relacionamento N:1 com a tabela de usuários (cada tarefa pertence a um usuário)
 
 ## 🧪 Testes Implementados
