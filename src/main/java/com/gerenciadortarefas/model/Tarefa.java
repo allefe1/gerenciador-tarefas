@@ -48,6 +48,10 @@ public class Tarefa implements Serializable {
     @Column(name = "data_conclusao")
     private Date dataConclusao;
     
+    @Temporal(TemporalType.DATE)
+    @Column(name = "data_deadline")
+    private Date dataDeadline;
+    
     @ManyToOne
     @JoinColumn(name = "responsavel_id")
     private Usuario responsavel;
@@ -126,6 +130,14 @@ public class Tarefa implements Serializable {
 
     public void setDataConclusao(Date dataConclusao) {
         this.dataConclusao = dataConclusao;
+    }
+    
+    public Date getDataDeadline() {
+        return dataDeadline;
+    }
+
+    public void setDataDeadline(Date dataDeadline) {
+        this.dataDeadline = dataDeadline;
     }
 
     public Usuario getUsuario() {

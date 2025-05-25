@@ -58,7 +58,7 @@
 				</h:selectOneMenu>
 			</div>
 
-			<!-- Campo de seleção de responsável adicionado aqui -->
+			<!-- Campo de seleção de responsável -->
 			<div class="form-group">
 				<h:outputLabel for="responsavel" value="Responsável:" />
 				<h:selectOneMenu id="responsavel"
@@ -69,6 +69,17 @@
 					<f:selectItems value="#{tarefaBean.usuarios}" var="usuario"
 						itemLabel="#{usuario.nome}" itemValue="#{usuario}" />
 				</h:selectOneMenu>
+			</div>
+
+			<!-- NOVO CAMPO DE DEADLINE -->
+			<div class="form-group">
+				<h:outputLabel for="deadline" value="Data Limite (Deadline):" />
+				<h:inputText id="deadline" value="#{tarefaBean.tarefa.dataDeadline}"
+					styleClass="form-control" style="width: 100%;">
+					<f:convertDateTime pattern="dd/MM/yyyy" timeZone="America/Sao_Paulo" />
+				</h:inputText>
+				<h:message for="deadline" styleClass="error" />
+				<small style="color: #666; font-size: 12px;">Formato: dd/MM/aaaa (ex: 25/12/2025)</small>
 			</div>
 
 			<div class="form-group">
@@ -154,12 +165,16 @@
 						style="color: #999; font-style: italic;" />
 				</h:column>
 
+				
 				<h:column>
-					<f:facet name="header">Data Criação</f:facet>
-					<h:outputText value="#{tarefa.dataCriacao}">
-						<f:convertDateTime pattern="dd/MM/yyyy HH:mm"
-							timeZone="America/Sao_Paulo" />
+					<f:facet name="header">Deadline</f:facet>
+					<h:outputText value="#{tarefa.dataDeadline}" 
+								  rendered="#{tarefa.dataDeadline != null}">
+						<f:convertDateTime pattern="dd/MM/yyyy" timeZone="America/Sao_Paulo" />
 					</h:outputText>
+					<h:outputText value="Não definido" 
+								  rendered="#{tarefa.dataDeadline == null}"
+								  style="color: #999; font-style: italic;" />
 				</h:column>
 
 				<h:column>
